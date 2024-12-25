@@ -12,3 +12,74 @@ datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
+
+model User {
+  id       String @id @default(uuid())
+  email    String @unique
+  name     String
+  password String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  streamingService StreamingService[]
+}
+
+model StreamingService {
+  id       String   @id @default(uuid())
+  userId   String
+  name     String
+  price    Float
+  currency Currency @default(GBP)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user User   @relation(fields: [userId], references: [id])
+  film Film[]
+}
+
+model Film {
+  id                 String @id @default(uuid())
+  streamingServiceId String
+  name               String
+  year               Int
+  genre              Genre
+  rating             Int
+  runtime            Int // in minutes
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  streamingService StreamingService @relation(fields: [streamingServiceId], references: [id])
+
+  @@unique([streamingServiceId, name, year]) // Database level compound unique constraint to ensure a streaming service can only have one film with the same name and year
+}
+
+enum Currency {
+  GBP
+  USD
+  EUR
+  NGN
+}
+
+enum Genre {
+  ACTION
+  ADVENTURE
+  COMEDY
+  CRIME
+  DRAMA
+  FANTASY
+  HISTORICAL
+  HORROR
+  MYSTERY
+  PHILOSOPHICAL
+  POLITICAL
+  ROMANCE
+  SAGA
+  SATIRE
+  SCIENCE_FICTION
+  THRILLER
+  URBAN
+  WESTERN
+}
