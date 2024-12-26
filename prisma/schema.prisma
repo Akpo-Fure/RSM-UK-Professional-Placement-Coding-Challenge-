@@ -28,7 +28,7 @@ model User {
 model StreamingService {
   id       String   @id @default(uuid())
   userId   String
-  name     String
+  name     String   @unique
   price    Float
   currency Currency @default(GBP)
 

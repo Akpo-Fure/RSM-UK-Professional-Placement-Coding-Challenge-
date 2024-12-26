@@ -5,7 +5,7 @@ import {
   NotFoundException,
 } from '@nestjs/common'
 import { JwtService } from '@nestjs/jwt'
-import { PrismaService } from '../prisma/prisma.service'
+import { PrismaService } from '../shared/prisma.service'
 import { SignInDto, SignUpDto } from './auth.dto'
 
 @Injectable()

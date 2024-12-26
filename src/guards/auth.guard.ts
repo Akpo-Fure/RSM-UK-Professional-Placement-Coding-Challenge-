@@ -6,16 +6,16 @@ import {
   UnauthorizedException,
 } from '@nestjs/common'
 import { JwtService } from '@nestjs/jwt'
-import { PrismaService } from '../modules/prisma/prisma.service'
+import { PrismaService } from '../modules/shared/prisma.service'
 
 @Injectable()
 export class AuthGuard implements CanActivate {
   constructor(
-    private readonly jwtService: JwtService,
+    private readonly jwt: JwtService,
     private readonly prisma: PrismaService,
   ) {}
   async canActivate(context: ExecutionContext): Promise<boolean> {
-    const request = context.switchToHttp().getRequest()
+    const request: Request = context.switchToHttp().getRequest()
     const token = this.extractTokenFromHeader(request)
 
     if (!token) {
@@ -23,7 +23,7 @@ export class AuthGuard implements CanActivate {
     }
 
     try {
-      const payload = this.jwtService.verify(token) as { sub: string }
+      const payload = this.jwt.verify(token) as { sub: string }
       const user = await this.prisma.user.findUnique({
         where: { id: payload.sub },
       })
@@ -33,7 +33,8 @@ export class AuthGuard implements CanActivate {
       }
 
       delete user.password
-      request.user = user
+
+      request['user'] = user
     } catch (e) {
       throw new UnauthorizedException(e.message ?? 'Invalid token')
     }
