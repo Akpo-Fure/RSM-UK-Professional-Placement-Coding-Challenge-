@@ -3,20 +3,20 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common'
+import { Prisma } from '@prisma/client'
 import { PrismaService } from '../shared/prisma.service'
 import {
-  AddFilmDto,
+  CreateFilmDto,
   FilmIdParamDto,
   RateFilmDto,
   GetFilmsQueryDto,
 } from './film.dto'
-import { Prisma } from '@prisma/client'
 
 @Injectable()
 export class FilmService {
   constructor(private prisma: PrismaService) {}
 
-  async addFilm(body: AddFilmDto) {
+  async addFilm(body: CreateFilmDto) {
     const streamingService = await this.prisma.streamingService.findFirst({
       where: { id: body.streamingServiceId },
     })

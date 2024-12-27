@@ -6,7 +6,7 @@ export const ValidationPipe = new Pipe({
   exceptionFactory(errors) {
     const error = errors[0].constraints
       ? errors[0].constraints[Object.keys(errors[0].constraints)[0]]
-      : 'Unknown validation error'
+      : `Unknown validation error on ${errors[0].property}`
     return new BadRequestException(error)
   },
 })

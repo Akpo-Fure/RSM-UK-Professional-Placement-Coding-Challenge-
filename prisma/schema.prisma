@@ -13,18 +13,6 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model StreamingService {
-  id       String   @id @default(uuid())
-  name     String
-  price    Float
-  currency Currency @default(GBP)
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  film Film[]
-}
-
 model Film {
   id                 String @id @default(uuid())
   streamingServiceId String
@@ -42,26 +30,59 @@ model Film {
   @@unique([name, year])
 }
 
-model TVShow {
-  id                 String @id @default(uuid())
-  streamingServiceId String
-  name               String
-  genre              Genre
-  rating             Int
+model StreamingService {
+  id       String   @id @default(uuid())
+  name     String
+  price    Float
+  currency Currency @default(GBP)
+  deleted  Boolean  @default(false)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  film                   Film[]
+  tvShowStreamingService TvShowStreamingService[]
 }
 
-model Seasons {
-  id           String @id @default(uuid())
-  tvShowId     String
-  number       Int
-  year         Int
-  noOfEpisodes Int
+model TVShow {
+  id      String  @id @default(uuid())
+  name    String
+  genre   Genre
+  rating  Int
+  deleted Boolean @default(false)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  tvShowStreamingService TvShowStreamingService[]
+}
+
+model TvShowStreamingService {
+  id                 String  @id @default(uuid())
+  tvShowId           String
+  streamingServiceId String
+  deleted            Boolean @default(false)
+
+  tvShow           TVShow           @relation(fields: [tvShowId], references: [id])
+  streamingService StreamingService @relation(fields: [streamingServiceId], references: [id])
+  season           Season[]
+
+  @@unique([tvShowId, streamingServiceId])
+}
+
+model Season {
+  id                       String @id @default(uuid())
+  tvShowStreamingServiceId String
+  number                   Int
+  year                     Int
+  noOfEpisodes             Int
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  tvShowStreamingService TvShowStreamingService @relation(fields: [tvShowStreamingServiceId], references: [id])
+
+  @@unique([tvShowStreamingServiceId, number])
 }
 
 enum Currency {

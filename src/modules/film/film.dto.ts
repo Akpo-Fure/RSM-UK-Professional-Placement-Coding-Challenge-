@@ -12,7 +12,7 @@ import {
 import { UUID } from 'crypto'
 import { Genre, Prisma } from '@prisma/client'
 
-class AddFilmDto {
+class CreateFilmDto {
   @IsString()
   @IsNotEmpty()
   @IsUUID()
@@ -86,4 +86,4 @@ class GetFilmsQueryDto {
   search: string
 }
 
-export { AddFilmDto, FilmIdParamDto, RateFilmDto, GetFilmsQueryDto }
+export { CreateFilmDto, FilmIdParamDto, RateFilmDto, GetFilmsQueryDto }
