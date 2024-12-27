@@ -1,13 +1,12 @@
 import { Injectable, ConflictException } from '@nestjs/common'
 import { CreateStreamingServiceDto } from './streaming-service.dto'
 import { PrismaService } from '../shared/prisma.service'
-import { RequestUser } from '../../types'
 
 @Injectable()
 export class StreamingServiceService {
   constructor(private prisma: PrismaService) {}
 
-  async create(dto: CreateStreamingServiceDto, user: RequestUser) {
+  async create(dto: CreateStreamingServiceDto) {
     // const streamingService = await this.prisma.streamingService.findUnique({
     //   where: { name: dto.name },
     // })
@@ -19,10 +18,7 @@ export class StreamingServiceService {
     // }
 
     await this.prisma.streamingService.create({
-      data: {
-        ...dto,
-        userId: user.id,
-      },
+      data: dto,
     })
 
     return { message: 'Streaming service added successfully' }

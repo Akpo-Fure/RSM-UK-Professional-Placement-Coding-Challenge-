@@ -13,22 +13,8 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model User {
-  id       String @id @default(uuid())
-  email    String @unique
-  name     String
-  password String
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  streamingService StreamingService[]
-  film             Film[]
-}
-
 model StreamingService {
   id       String   @id @default(uuid())
-  userId   String
   name     String
   price    Float
   currency Currency @default(GBP)
@@ -36,14 +22,12 @@ model StreamingService {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  user User   @relation(fields: [userId], references: [id])
   film Film[]
 }
 
 model Film {
   id                 String @id @default(uuid())
   streamingServiceId String
-  userId             String
   name               String
   year               Int
   genre              Genre
@@ -54,9 +38,30 @@ model Film {
   updatedAt DateTime @updatedAt
 
   streamingService StreamingService @relation(fields: [streamingServiceId], references: [id])
-  user             User             @relation(fields: [userId], references: [id])
 
-  @@unique([userId, name, year])
+  @@unique([name, year])
+}
+
+model TVShow {
+  id                 String @id @default(uuid())
+  streamingServiceId String
+  name               String
+  genre              Genre
+  rating             Int
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Seasons {
+  id           String @id @default(uuid())
+  tvShowId     String
+  number       Int
+  year         Int
+  noOfEpisodes Int
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 enum Currency {

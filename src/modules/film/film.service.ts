@@ -3,7 +3,6 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common'
-import { RequestUser } from '../../types'
 import { PrismaService } from '../shared/prisma.service'
 import {
   AddFilmDto,
@@ -17,9 +16,9 @@ import { Prisma } from '@prisma/client'
 export class FilmService {
   constructor(private prisma: PrismaService) {}
 
-  async addFilm(user: RequestUser, body: AddFilmDto) {
+  async addFilm(body: AddFilmDto) {
     const streamingService = await this.prisma.streamingService.findFirst({
-      where: { id: body.streamingServiceId, userId: user.id },
+      where: { id: body.streamingServiceId },
     })
 
     if (!streamingService) {
@@ -28,8 +27,7 @@ export class FilmService {
 
     const film = await this.prisma.film.findUnique({
       where: {
-        userId_name_year: {
-          userId: user.id,
+        name_year: {
           name: body.name,
           year: body.year,
         },
@@ -52,7 +50,6 @@ export class FilmService {
     await this.prisma.film.create({
       data: {
         ...body,
-        userId: user.id,
         streamingServiceId: body.streamingServiceId,
       },
     })
@@ -60,7 +57,7 @@ export class FilmService {
     return { message: 'Film added successfully' }
   }
 
-  async getFilms(user: RequestUser, query: GetFilmsQueryDto) {
+  async getFilms(query: GetFilmsQueryDto) {
     const {
       streamingServiceId,
       page = 1,
@@ -73,7 +70,6 @@ export class FilmService {
     const skip: number = page > 1 ? (page - 1) * limit : 0
 
     let where: Prisma.FilmWhereInput = {
-      userId: user.id,
       streamingServiceId,
     }
 
@@ -105,9 +101,9 @@ export class FilmService {
     return response
   }
 
-  async deleteFilm(user: RequestUser, params: FilmIdParamDto) {
+  async deleteFilm(params: FilmIdParamDto) {
     const film = await this.prisma.film.findFirst({
-      where: { id: params.id, userId: user.id },
+      where: { id: params.id },
     })
 
     if (!film) {
@@ -121,9 +117,9 @@ export class FilmService {
     return { message: 'Film deleted successfully' }
   }
 
-  async rateFilm(user: RequestUser, params: FilmIdParamDto, body: RateFilmDto) {
+  async rateFilm(params: FilmIdParamDto, body: RateFilmDto) {
     const film = await this.prisma.film.findFirst({
-      where: { id: params.id, userId: user.id },
+      where: { id: params.id },
     })
 
     if (!film) {
