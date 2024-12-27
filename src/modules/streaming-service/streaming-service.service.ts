@@ -8,15 +8,15 @@ export class StreamingServiceService {
   constructor(private prisma: PrismaService) {}
 
   async create(dto: CreateStreamingServiceDto, user: RequestUser) {
-    const streamingService = await this.prisma.streamingService.findUnique({
-      where: { name: dto.name },
-    })
+    // const streamingService = await this.prisma.streamingService.findUnique({
+    //   where: { name: dto.name },
+    // })
 
-    if (streamingService) {
-      throw new ConflictException(
-        `Streaming service with name ${dto.name} already exists`,
-      )
-    }
+    // if (streamingService) {
+    //   throw new ConflictException(
+    //     `Streaming service with name ${dto.name} already exists`,
+    //   )
+    // }
 
     await this.prisma.streamingService.create({
       data: {

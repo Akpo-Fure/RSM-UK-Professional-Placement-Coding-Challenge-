@@ -23,12 +23,13 @@ model User {
   updatedAt DateTime @updatedAt
 
   streamingService StreamingService[]
+  film             Film[]
 }
 
 model StreamingService {
   id       String   @id @default(uuid())
   userId   String
-  name     String   @unique
+  name     String
   price    Float
   currency Currency @default(GBP)
 
@@ -42,6 +43,7 @@ model StreamingService {
 model Film {
   id                 String @id @default(uuid())
   streamingServiceId String
+  userId             String
   name               String
   year               Int
   genre              Genre
@@ -52,8 +54,9 @@ model Film {
   updatedAt DateTime @updatedAt
 
   streamingService StreamingService @relation(fields: [streamingServiceId], references: [id])
+  user             User             @relation(fields: [userId], references: [id])
 
-  @@unique([streamingServiceId, name, year]) // Database level compound unique constraint to ensure a streaming service can only have one film with the same name and year
+  @@unique([userId, name, year])
 }
 
 enum Currency {

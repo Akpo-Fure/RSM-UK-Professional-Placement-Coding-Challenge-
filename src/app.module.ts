@@ -3,6 +3,7 @@ import { JwtModule } from '@nestjs/jwt'
 import { PrismaModule } from './modules/prisma/prisma.module'
 import { AuthModule } from './modules/auth/auth.module'
 import { StreamingServiceModule } from './modules/streaming-service/streaming-service.module'
+import { FilmModule } from './modules/film/film.module'
 import { AppController } from './app.controller'
 import { AppService } from './app.service'
 
@@ -16,6 +17,7 @@ import { AppService } from './app.service'
     PrismaModule,
     AuthModule,
     StreamingServiceModule,
+    FilmModule,
   ],
   controllers: [AppController],
   providers: [AppService],
