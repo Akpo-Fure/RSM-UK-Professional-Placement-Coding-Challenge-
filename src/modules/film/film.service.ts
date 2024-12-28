@@ -6,7 +6,7 @@ import {
 import { Prisma } from '@prisma/client'
 import { PrismaService } from '../shared/prisma.service'
 import {
-  CreateFilmDto,
+  AddFilmDto,
   FilmIdParamDto,
   RateFilmDto,
   GetFilmsQueryDto,
@@ -16,7 +16,7 @@ import {
 export class FilmService {
   constructor(private prisma: PrismaService) {}
 
-  async addFilm(body: CreateFilmDto) {
+  async addFilm(body: AddFilmDto) {
     const streamingService = await this.prisma.streamingService.findFirst({
       where: { id: body.streamingServiceId },
     })

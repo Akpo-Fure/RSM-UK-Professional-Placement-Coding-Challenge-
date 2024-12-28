@@ -7,16 +7,16 @@ import {
   MinLength,
   Min,
   Max,
-  IsInt,
   IsArray,
   ValidateNested,
+  IsOptional,
 } from 'class-validator'
 import { Type } from 'class-transformer'
 import { UUID } from 'crypto'
 import { Genre } from '@prisma/client'
 import { IsSeasonNumbersUnique } from '../utils/validation'
 
-class CreateTvShowDto {
+class AddTvShowDto {
   @IsString()
   @IsNotEmpty()
   @IsUUID()
@@ -87,9 +87,51 @@ class RateTvShowDto {
   rating: number
 }
 
+class GetTvShowsOnStreamingServiceQueryDto {
+  @IsString()
+  @IsNotEmpty()
+  @IsUUID()
+  streamingServiceId: UUID
+
+  @IsString()
+  @IsOptional()
+  page: number
+
+  @IsString()
+  @IsOptional()
+  limit: number
+}
+
+class AddTvShowToStreamingServiceDto {
+  @IsString()
+  @IsNotEmpty()
+  @IsUUID()
+  streamingServiceId: UUID
+
+  @IsString()
+  @IsNotEmpty()
+  @IsUUID()
+  tvShowId: UUID
+}
+
+class AddSeasonToTvShowDto {
+  @IsString()
+  @IsNotEmpty()
+  @IsUUID()
+  tvShowStreamingServiceId: UUID
+
+  @Type(() => AddSeasonDto)
+  @ValidateNested()
+  @IsNotEmpty()
+  season: AddSeasonDto
+}
+
 export {
-  CreateTvShowDto,
+  AddTvShowDto,
   AddSeasonToTVShowDto,
   TvShowIdParamDto,
   RateTvShowDto,
+  AddTvShowToStreamingServiceDto,
+  AddSeasonToTvShowDto,
+  GetTvShowsOnStreamingServiceQueryDto,
 }
