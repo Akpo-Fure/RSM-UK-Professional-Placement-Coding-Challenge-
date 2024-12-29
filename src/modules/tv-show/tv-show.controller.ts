@@ -23,23 +23,23 @@ export class TvShowController {
   constructor(private tvShowService: TvShowService) {}
 
   @Post()
-  async addTvShow(@Body() body: AddTvShowDto) {
-    return await this.tvShowService.addTvShow(body)
+  async createTvShow(@Body() body: AddTvShowDto) {
+    return await this.tvShowService.createTvShow(body)
   }
 
   @Get()
-  async getTvShowsOnStreamingService(
+  async fetchTvShowsOnStreamingService(
     @Query() query: GetTvShowsOnStreamingServiceQueryDto,
   ) {
-    return await this.tvShowService.getTvShowsOnStreamingService(query)
+    return await this.tvShowService.fetchTvShowsOnStreamingService(query)
   }
 
   @Patch(':id/rate')
-  async rateTvShow(
+  async updateTvShowRating(
     @Param() params: TvShowIdParamDto,
     @Body() body: RateTvShowDto,
   ) {
-    return await this.tvShowService.rateTvShow(params, body)
+    return await this.tvShowService.updateTvShowRating(params, body)
   }
 
   @Post('add-to-streaming-service')

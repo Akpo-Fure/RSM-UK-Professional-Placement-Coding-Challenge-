@@ -9,7 +9,7 @@ import {
 } from 'class-validator'
 import { Currency } from '@prisma/client'
 
-class CreateStreamingServiceDto {
+class AddStreamingServiceDto {
   @IsString()
   @IsNotEmpty()
   @MinLength(1)
@@ -25,4 +25,4 @@ class CreateStreamingServiceDto {
   currency: Currency = Currency.GBP
 }
 
-export { CreateStreamingServiceDto }
+export { AddStreamingServiceDto }

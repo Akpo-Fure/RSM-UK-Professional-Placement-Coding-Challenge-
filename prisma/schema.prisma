@@ -13,6 +13,20 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+model StreamingService {
+  id       String   @id @default(uuid())
+  name     String   @unique
+  price    Float
+  currency Currency @default(GBP)
+  deleted  Boolean  @default(false)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  film                   Film[]
+  tvShowStreamingService TvShowStreamingService[]
+}
+
 model Film {
   id                 String @id @default(uuid())
   streamingServiceId String
@@ -28,20 +42,6 @@ model Film {
   streamingService StreamingService @relation(fields: [streamingServiceId], references: [id])
 
   @@unique([name, year])
-}
-
-model StreamingService {
-  id       String   @id @default(uuid())
-  name     String
-  price    Float
-  currency Currency @default(GBP)
-  deleted  Boolean  @default(false)
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  film                   Film[]
-  tvShowStreamingService TvShowStreamingService[]
 }
 
 model TVShow {

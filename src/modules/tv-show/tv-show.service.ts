@@ -4,6 +4,7 @@ import {
   NotFoundException,
 } from '@nestjs/common'
 import { PrismaService } from '../shared/prisma.service'
+import { StreamingServiceService } from '../streaming-service/streaming-service.service'
 import {
   AddTvShowDto,
   TvShowIdParamDto,
@@ -16,28 +17,29 @@ import { Prisma } from '@prisma/client'
 
 @Injectable()
 export class TvShowService {
-  constructor(private prisma: PrismaService) {}
+  constructor(
+    private prisma: PrismaService,
+    private streamingService: StreamingServiceService,
+  ) {}
 
-  async addTvShow(body: AddTvShowDto) {
-    const streamingService = await this.prisma.streamingService.findFirst({
-      where: { id: body.streamingServiceId, deleted: false },
+  async createTvShow(body: AddTvShowDto) {
+    const streamingService = await this.streamingService.findOne({
+      id: body.streamingServiceId,
     })
 
     if (!streamingService) {
       throw new NotFoundException('Streaming service not found')
     }
 
-    const tvShow = await this.prisma.tVShow.create({
-      data: {
-        name: body.name,
-        genre: body.genre,
-        rating: body.rating,
-        tvShowStreamingService: {
-          create: {
-            streamingServiceId: body.streamingServiceId,
-            season: {
-              createMany: { data: body.seasons },
-            },
+    const tvShow = await this.createOne({
+      name: body.name,
+      genre: body.genre,
+      rating: body.rating,
+      tvShowStreamingService: {
+        create: {
+          streamingServiceId: body.streamingServiceId,
+          season: {
+            createMany: { data: body.seasons },
           },
         },
       },
@@ -46,7 +48,7 @@ export class TvShowService {
     return { message: 'TV Show added successfully', data: tvShow }
   }
 
-  async getTvShowsOnStreamingService(
+  async fetchTvShowsOnStreamingService(
     query: GetTvShowsOnStreamingServiceQueryDto,
   ) {
     const { streamingServiceId, page = 1, limit = 20 } = query
@@ -57,8 +59,8 @@ export class TvShowService {
       streamingServiceId: streamingServiceId,
     }
 
-    const streamingService = await this.prisma.streamingService.findFirst({
-      where: { id: streamingServiceId, deleted: false },
+    const streamingService = await this.streamingService.findOne({
+      id: streamingServiceId,
     })
 
     if (!streamingService) {
@@ -86,7 +88,7 @@ export class TvShowService {
     return response
   }
 
-  async rateTvShow(params: TvShowIdParamDto, body: RateTvShowDto) {
+  async updateTvShowRating(params: TvShowIdParamDto, body: RateTvShowDto) {
     const tvShow = await this.prisma.tVShow.findFirst({
       where: { id: params.id },
     })
@@ -95,17 +97,14 @@ export class TvShowService {
       throw new NotFoundException('TV Show not found')
     }
 
-    await this.prisma.tVShow.update({
-      where: { id: params.id },
-      data: { rating: body.rating },
-    })
+    await this.updateOne({ id: params.id }, { rating: body.rating })
 
     return { message: 'TV Show rated successfully' }
   }
 
   async addTvShowToStreamingService(body: AddTvShowToStreamingServiceDto) {
-    const streamingService = await this.prisma.streamingService.findFirst({
-      where: { id: body.streamingServiceId, deleted: false },
+    const streamingService = await this.streamingService.findOne({
+      id: body.streamingServiceId,
     })
 
     if (!streamingService) {
@@ -155,6 +154,7 @@ export class TvShowService {
         where: {
           tvShowStreamingService: {
             tvShowId: tvShow.tvShowId,
+            streamingService: { deleted: false },
           },
           number: body.season.number,
         },
@@ -180,5 +180,20 @@ export class TvShowService {
     })
 
     return { message: 'Season added successfully', data: newSeason }
+  }
+
+  async createOne(data: Prisma.TVShowCreateInput) {
+    return await this.prisma.tVShow.create({ data })
+  }
+
+  async findOne(where: Prisma.TVShowWhereUniqueInput) {
+    return await this.prisma.tVShow.findFirst({ where })
+  }
+
+  async updateOne(
+    where: Prisma.TVShowWhereUniqueInput,
+    data: Prisma.TVShowUpdateInput,
+  ) {
+    return await this.prisma.tVShow.update({ where, data })
   }
 }
