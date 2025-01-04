@@ -87,7 +87,7 @@ class RateTvShowDto {
   rating: number
 }
 
-class GetTvShowsOnStreamingServiceQueryDto {
+class GetTvShowsOnServiceQueryDto {
   @IsString()
   @IsNotEmpty()
   @IsUUID()
@@ -102,7 +102,7 @@ class GetTvShowsOnStreamingServiceQueryDto {
   limit: number
 }
 
-class AddTvShowToStreamingServiceDto {
+class AddTvShowToServiceDto {
   @IsString()
   @IsNotEmpty()
   @IsUUID()
@@ -131,7 +131,7 @@ export {
   AddSeasonToTVShowDto,
   TvShowIdParamDto,
   RateTvShowDto,
-  AddTvShowToStreamingServiceDto,
+  AddTvShowToServiceDto,
   AddSeasonToTvShowDto,
-  GetTvShowsOnStreamingServiceQueryDto,
+  GetTvShowsOnServiceQueryDto,
 }

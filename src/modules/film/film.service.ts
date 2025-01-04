@@ -12,6 +12,7 @@ import {
   RateFilmDto,
   GetFilmsQueryDto,
 } from './film.dto'
+import { ResponseDto } from '../utils'
 
 @Injectable()
 export class FilmService {
@@ -20,14 +21,10 @@ export class FilmService {
     private streamingService: StreamingServiceService,
   ) {}
 
-  async createFilm(body: AddFilmDto) {
-    const streamingService = await this.streamingService.findOne({
-      id: body.streamingServiceId,
-    })
-
-    if (!streamingService) {
-      throw new NotFoundException('Streaming service not found')
-    }
+  async addFilmToService(body: AddFilmDto) {
+    await this.streamingService.validateStreamingServiceExists(
+      body.streamingServiceId,
+    )
 
     const film = await this.prisma.film.findUnique({
       where: {
@@ -56,10 +53,10 @@ export class FilmService {
       streamingServiceId: body.streamingServiceId,
     })
 
-    return { message: 'Film added successfully' }
+    return new ResponseDto('Film added successfully')
   }
 
-  async fetchFilms(query: GetFilmsQueryDto) {
+  async getFilmsByService(query: GetFilmsQueryDto) {
     const {
       streamingServiceId,
       page = 1,
@@ -78,7 +75,7 @@ export class FilmService {
     if (search) {
       where = {
         ...where,
-        OR: [{ name: { contains: search } }],
+        OR: [{ name: { contains: search, mode: 'insensitive' } }],
       }
     }
 
@@ -92,39 +89,29 @@ export class FilmService {
       }),
     ])
 
-    const response = {
-      data: films,
-      message: 'Films fetched successfully',
-      currentPage: page,
-      count: Number(total),
-      totalPages: Math.ceil(total / limit),
-    }
-
-    return response
+    return new ResponseDto(
+      'Films fetched successfully',
+      films,
+      page,
+      total,
+      Math.ceil(total / limit),
+    )
   }
 
-  async updateFilmRating(params: FilmIdParamDto, body: RateFilmDto) {
-    const film = await this.findOne({ id: params.id })
-
-    if (!film) {
-      throw new NotFoundException('Film not found')
-    }
+  async rateFilm(params: FilmIdParamDto, body: RateFilmDto) {
+    await this.validateFilmExists(params.id)
 
     await this.updateOne({ id: params.id }, { rating: body.rating })
 
-    return { message: 'Film rated successfully' }
+    return new ResponseDto('Film rated successfully')
   }
 
   async removeFilm(params: FilmIdParamDto) {
-    const film = await this.findOne({ id: params.id })
-
-    if (!film) {
-      throw new NotFoundException('Film not found')
-    }
+    await this.validateFilmExists(params.id)
 
     await this.deleteOne({ id: params.id })
 
-    return { message: 'Film deleted successfully' }
+    return new ResponseDto('Film deleted successfully')
   }
 
   async createOne(data: Prisma.FilmUncheckedCreateInput) {
@@ -163,5 +150,15 @@ export class FilmService {
     return await this.prisma.film.delete({
       where,
     })
+  }
+
+  async validateFilmExists(id: string) {
+    const film = await this.findUnique({ id })
+
+    if (!film) {
+      throw new NotFoundException('Film not found')
+    }
+
+    return film
   }
 }

@@ -1,4 +1,6 @@
+import { Prisma } from '@prisma/client'
 import {
+  IsUUID,
   IsEnum,
   IsNumber,
   IsPositive,
@@ -9,7 +11,7 @@ import {
 } from 'class-validator'
 import { Currency } from '@prisma/client'
 
-class AddStreamingServiceDto {
+class CreateStreamingServiceDto {
   @IsString()
   @IsNotEmpty()
   @MinLength(1)
@@ -25,4 +27,38 @@ class AddStreamingServiceDto {
   currency: Currency = Currency.GBP
 }
 
-export { AddStreamingServiceDto }
+class GetStreamingServicesQueryDto {
+  @IsString()
+  @IsOptional()
+  page: number
+
+  @IsString()
+  @IsOptional()
+  limit: number
+
+  @IsEnum(Prisma.SortOrder)
+  @IsOptional()
+  sort: Prisma.SortOrder = Prisma.SortOrder.asc
+
+  @IsEnum(Prisma.StreamingServiceScalarFieldEnum)
+  @IsOptional()
+  sortBy: Prisma.StreamingServiceScalarFieldEnum =
+    Prisma.StreamingServiceScalarFieldEnum.createdAt
+
+  @IsString()
+  @IsOptional()
+  search: string
+}
+
+class DeleteStreamingServiceParamsDto {
+  @IsString()
+  @IsNotEmpty()
+  @IsUUID()
+  id: string
+}
+
+export {
+  CreateStreamingServiceDto,
+  GetStreamingServicesQueryDto,
+  DeleteStreamingServiceParamsDto,
+}

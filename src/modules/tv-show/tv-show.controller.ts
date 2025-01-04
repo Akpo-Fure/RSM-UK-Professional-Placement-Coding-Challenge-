@@ -6,15 +6,14 @@ import {
   Query,
   Body,
   Param,
-  Delete,
 } from '@nestjs/common'
 import { TvShowService } from './tv-show.service'
 import {
   AddTvShowDto,
   RateTvShowDto,
   TvShowIdParamDto,
-  GetTvShowsOnStreamingServiceQueryDto,
-  AddTvShowToStreamingServiceDto,
+  GetTvShowsOnServiceQueryDto,
+  AddTvShowToServiceDto,
   AddSeasonToTvShowDto,
 } from './tv-show.dto'
 
@@ -28,10 +27,8 @@ export class TvShowController {
   }
 
   @Get()
-  async fetchTvShowsOnStreamingService(
-    @Query() query: GetTvShowsOnStreamingServiceQueryDto,
-  ) {
-    return await this.tvShowService.fetchTvShowsOnStreamingService(query)
+  async getTvShowsByService(@Query() query: GetTvShowsOnServiceQueryDto) {
+    return await this.tvShowService.getTvShowsByService(query)
   }
 
   @Patch(':id/rate')
@@ -43,10 +40,8 @@ export class TvShowController {
   }
 
   @Post('add-to-streaming-service')
-  async addTvShowToStreamingService(
-    @Body() body: AddTvShowToStreamingServiceDto,
-  ) {
-    return await this.tvShowService.addTvShowToStreamingService(body)
+  async addTvShowToService(@Body() body: AddTvShowToServiceDto) {
+    return await this.tvShowService.addTvShowToService(body)
   }
 
   @Post('add-season')

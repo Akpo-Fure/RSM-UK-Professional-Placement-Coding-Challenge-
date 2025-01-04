@@ -1,13 +1,37 @@
-import { Controller, Body, Post } from '@nestjs/common'
+import {
+  Controller,
+  Post,
+  Get,
+  Delete,
+  Body,
+  Query,
+  Param,
+} from '@nestjs/common'
 import { StreamingServiceService } from './streaming-service.service'
-import { AddStreamingServiceDto } from './streaming-service.dto'
+import {
+  CreateStreamingServiceDto,
+  GetStreamingServicesQueryDto,
+  DeleteStreamingServiceParamsDto,
+} from './streaming-service.dto'
 
 @Controller('streaming-service')
 export class StreamingServiceController {
   constructor(private streamingServiceService: StreamingServiceService) {}
 
   @Post()
-  async add(@Body() dto: AddStreamingServiceDto) {
-    return await this.streamingServiceService.add(dto)
+  async createStreamingService(@Body() dto: CreateStreamingServiceDto) {
+    return await this.streamingServiceService.createStreamingService(dto)
+  }
+
+  @Get()
+  async getStreamingServices(@Query() query: GetStreamingServicesQueryDto) {
+    return await this.streamingServiceService.getStreamingServices(query)
+  }
+
+  @Delete(':id')
+  async deleteStreamingService(
+    @Param() params: DeleteStreamingServiceParamsDto,
+  ) {
+    return await this.streamingServiceService.deleteStreamingService(params)
   }
 }
