@@ -52,6 +52,7 @@ export class TvShowService {
 
     const where: Prisma.TvShowStreamingServiceWhereInput = {
       streamingServiceId: streamingServiceId,
+      tvShow: { name: { contains: query.search, mode: 'insensitive' } },
     }
 
     await this.streamingService.validateStreamingServiceExists(
@@ -116,6 +117,12 @@ export class TvShowService {
   }
 
   async addSeasonToTvShow(body: AddSeasonToTvShowDto) {
+    await this.streamingService.validateStreamingServiceExists(
+      body.streamingServiceId,
+    )
+
+    await this.validateTvShowExists(body.tvShowId)
+
     const tvShow = await this.prisma.tvShowStreamingService.findFirst({
       where: {
         tvShowId: body.tvShowId,

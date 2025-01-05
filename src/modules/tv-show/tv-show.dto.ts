@@ -59,19 +59,6 @@ class AddSeasonDto {
   noOfEpisodes: number
 }
 
-class AddSeasonToTVShowDto {
-  @IsString()
-  @IsNotEmpty()
-  @IsUUID()
-  tvShowId: UUID
-
-  @ValidateNested({ each: true })
-  @IsSeasonNumbersUnique('seasons')
-  @IsArray()
-  @Type(() => AddSeasonDto)
-  seasons: AddSeasonDto[]
-}
-
 class TvShowIdParamDto {
   @IsString()
   @IsNotEmpty()
@@ -100,6 +87,10 @@ class GetTvShowsOnServiceQueryDto {
   @IsString()
   @IsOptional()
   limit: number
+
+  @IsString()
+  @IsOptional()
+  search: string
 }
 
 class AddTvShowToServiceDto {
@@ -133,7 +124,6 @@ class AddSeasonToTvShowDto {
 
 export {
   AddTvShowDto,
-  AddSeasonToTVShowDto,
   TvShowIdParamDto,
   RateTvShowDto,
   AddTvShowToServiceDto,
