@@ -40,14 +40,14 @@ export class StreamingServiceService {
 
     const skip: number = page > 1 ? (page - 1) * limit : 0
 
-    let where: Prisma.StreamingServiceWhereInput = {}
+    const where: Prisma.StreamingServiceWhereInput = {
+      deleted: false,
+    }
 
     if (search) {
-      where = {
-        name: {
-          contains: search,
-          mode: 'insensitive',
-        },
+      where.name = {
+        contains: search,
+        mode: 'insensitive',
       }
     }
 

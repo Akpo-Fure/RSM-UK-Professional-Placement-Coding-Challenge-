@@ -21,8 +21,8 @@ export class FilmController {
   constructor(private filmService: FilmService) {}
 
   @Post()
-  async addFilmToService(@Body() body: AddFilmDto) {
-    return await this.filmService.addFilmToService(body)
+  async addFilmToService(@Body() dto: AddFilmDto) {
+    return await this.filmService.addFilmToService(dto)
   }
 
   @Get()
@@ -31,8 +31,8 @@ export class FilmController {
   }
 
   @Patch(':id/rate')
-  async rateFilm(@Param() params: FilmIdParamDto, @Body() body: RateFilmDto) {
-    return await this.filmService.rateFilm(params, body)
+  async rateFilm(@Param() params: FilmIdParamDto, @Body() dto: RateFilmDto) {
+    return await this.filmService.rateFilm(params, dto)
   }
 
   @Delete(':id')

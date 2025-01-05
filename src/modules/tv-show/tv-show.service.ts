@@ -28,7 +28,7 @@ export class TvShowService {
       body.streamingServiceId,
     )
 
-    const tvShow = await this.createOne({
+    await this.createOne({
       name: body.name,
       genre: body.genre,
       rating: body.rating,
@@ -42,7 +42,7 @@ export class TvShowService {
       },
     })
 
-    return new ResponseDto('TV Show added successfully', tvShow)
+    return new ResponseDto('TV Show added successfully')
   }
 
   async getTvShowsByService(query: GetTvShowsOnServiceQueryDto) {
@@ -77,14 +77,8 @@ export class TvShowService {
     )
   }
 
-  async updateTvShowRating(params: TvShowIdParamDto, body: RateTvShowDto) {
-    const tvShow = await this.prisma.tVShow.findFirst({
-      where: { id: params.id },
-    })
-
-    if (!tvShow) {
-      throw new NotFoundException('TV Show not found')
-    }
+  async rateTvShow(params: TvShowIdParamDto, body: RateTvShowDto) {
+    await this.validateTvShowExists(params.id)
 
     await this.updateOne({ id: params.id }, { rating: body.rating })
 
@@ -96,13 +90,7 @@ export class TvShowService {
       body.streamingServiceId,
     )
 
-    const tvShow = await this.prisma.tVShow.findFirst({
-      where: { id: body.tvShowId },
-    })
-
-    if (!tvShow) {
-      throw new NotFoundException('TV Show not found')
-    }
+    await this.validateTvShowExists(body.tvShowId)
 
     const tvShowStreamingService =
       await this.prisma.tvShowStreamingService.upsert({
@@ -112,7 +100,9 @@ export class TvShowService {
             streamingServiceId: body.streamingServiceId,
           },
         },
-        update: {},
+        update: {
+          deleted: false,
+        },
         create: {
           tvShowId: body.tvShowId,
           streamingServiceId: body.streamingServiceId,
@@ -126,9 +116,12 @@ export class TvShowService {
   }
 
   async addSeasonToTvShow(body: AddSeasonToTvShowDto) {
-    // Use tvShowId and streamingServiceId to find the tvShowStreamingService instead of tvShowStreamingServiceId
     const tvShow = await this.prisma.tvShowStreamingService.findFirst({
-      where: { id: body.tvShowStreamingServiceId, deleted: false },
+      where: {
+        tvShowId: body.tvShowId,
+        streamingServiceId: body.streamingServiceId,
+        deleted: false,
+      },
     })
 
     if (!tvShow) {
@@ -160,14 +153,24 @@ export class TvShowService {
       return await this.prisma.season.create({
         data: {
           ...body.season,
-          tvShowStreamingServiceId: body.tvShowStreamingServiceId,
+          tvShowStreamingServiceId: tvShow.id,
         },
       })
     })
 
-    // return { message: 'Season added successfully', data: newSeason }
-
     return new ResponseDto('Season added successfully')
+  }
+
+  async validateTvShowExists(tvShowId: string) {
+    const tvShow = await this.prisma.tVShow.findFirst({
+      where: { id: tvShowId, deleted: false },
+    })
+
+    if (!tvShow) {
+      throw new NotFoundException('TV Show not found')
+    }
+
+    return tvShow
   }
 
   async createOne(data: Prisma.TVShowCreateInput) {
@@ -175,7 +178,9 @@ export class TvShowService {
   }
 
   async findOne(where: Prisma.TVShowWhereUniqueInput) {
-    return await this.prisma.tVShow.findFirst({ where })
+    return await this.prisma.tVShow.findFirst({
+      where: { ...where, deleted: false },
+    })
   }
 
   async updateOne(

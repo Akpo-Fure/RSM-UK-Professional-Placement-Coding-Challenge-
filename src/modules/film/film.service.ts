@@ -21,16 +21,16 @@ export class FilmService {
     private streamingService: StreamingServiceService,
   ) {}
 
-  async addFilmToService(body: AddFilmDto) {
+  async addFilmToService(dto: AddFilmDto) {
     await this.streamingService.validateStreamingServiceExists(
-      body.streamingServiceId,
+      dto.streamingServiceId,
     )
 
     const film = await this.prisma.film.findUnique({
       where: {
         name_year: {
-          name: body.name,
-          year: body.year,
+          name: dto.name,
+          year: dto.year,
         },
       },
       select: {
@@ -44,14 +44,11 @@ export class FilmService {
 
     if (film) {
       throw new ConflictException(
-        `Film with name "${body.name} (${body.year})" already exists on ${film.streamingService.name}, please remove it before adding it to another service`,
+        `Film with name "${dto.name} (${dto.year})" already exists on ${film.streamingService.name}, please remove it before adding it to another service`,
       )
     }
 
-    await this.createOne({
-      ...body,
-      streamingServiceId: body.streamingServiceId,
-    })
+    await this.createOne(dto)
 
     return new ResponseDto('Film added successfully')
   }
@@ -98,12 +95,12 @@ export class FilmService {
     )
   }
 
-  async rateFilm(params: FilmIdParamDto, body: RateFilmDto) {
+  async rateFilm(params: FilmIdParamDto, dto: RateFilmDto) {
     await this.validateFilmExists(params.id)
 
-    await this.updateOne({ id: params.id }, { rating: body.rating })
+    await this.updateOne({ id: params.id }, { rating: dto.rating })
 
-    return new ResponseDto('Film rated successfully')
+    return new ResponseDto('Film rating updated successfully')
   }
 
   async removeFilm(params: FilmIdParamDto) {
@@ -128,7 +125,7 @@ export class FilmService {
 
   async findUnique(
     where: Prisma.FilmWhereUniqueInput,
-    select: Prisma.FilmSelect = {},
+    select?: Prisma.FilmSelect,
   ) {
     return await this.prisma.film.findUnique({
       where,

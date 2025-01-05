@@ -32,11 +32,11 @@ export class TvShowController {
   }
 
   @Patch(':id/rate')
-  async updateTvShowRating(
+  async rateTvShow(
     @Param() params: TvShowIdParamDto,
     @Body() body: RateTvShowDto,
   ) {
-    return await this.tvShowService.updateTvShowRating(params, body)
+    return await this.tvShowService.rateTvShow(params, body)
   }
 
   @Post('add-to-streaming-service')

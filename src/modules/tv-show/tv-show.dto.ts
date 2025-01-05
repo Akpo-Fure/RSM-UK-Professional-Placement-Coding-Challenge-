@@ -118,7 +118,12 @@ class AddSeasonToTvShowDto {
   @IsString()
   @IsNotEmpty()
   @IsUUID()
-  tvShowStreamingServiceId: UUID
+  tvShowId: UUID
+
+  @IsString()
+  @IsNotEmpty()
+  @IsUUID()
+  streamingServiceId: UUID
 
   @Type(() => AddSeasonDto)
   @ValidateNested()
