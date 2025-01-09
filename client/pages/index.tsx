@@ -27,6 +27,7 @@ const Container = styled.div`
 export default function Home() {
   const router = useRouter()
   const { data } = useGetAPI()
+  console.log(data) // For testing purposes
 
   return (
     <>
