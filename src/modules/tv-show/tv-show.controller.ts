@@ -13,7 +13,7 @@ import {
   RateTvShowDto,
   TvShowIdParamDto,
   GetTvShowsOnServiceQueryDto,
-  AddTvShowToServiceDto,
+  AddTvShowToServiceParamDto,
   AddSeasonToTvShowDto,
 } from './tv-show.dto'
 
@@ -31,6 +31,11 @@ export class TvShowController {
     return await this.tvShowService.getTvShowsByService(query)
   }
 
+  @Get(':id/other-services')
+  async getTvShowsOnOtherServices(@Param('id') id: string) {
+    return await this.tvShowService.getTvShowsOnOtherServices(id)
+  }
+
   @Patch(':id/rate')
   async rateTvShow(
     @Param() params: TvShowIdParamDto,
@@ -39,9 +44,9 @@ export class TvShowController {
     return await this.tvShowService.rateTvShow(params, body)
   }
 
-  @Post('add-to-streaming-service')
-  async addTvShowToService(@Body() body: AddTvShowToServiceDto) {
-    return await this.tvShowService.addTvShowToService(body)
+  @Post('add-to-streaming-service/:tvShowId/:streamingServiceId')
+  async addTvShowToService(@Param() params: AddTvShowToServiceParamDto) {
+    return await this.tvShowService.addTvShowToService(params)
   }
 
   @Post('add-season')

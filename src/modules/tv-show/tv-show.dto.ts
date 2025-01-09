@@ -45,15 +45,18 @@ class AddTvShowDto {
 }
 
 class AddSeasonDto {
+  @IsNotEmpty()
   @IsNumber()
   @Min(1)
   number: number
 
+  @IsNotEmpty()
   @IsNumber()
   @Min(1888)
   @Max(new Date().getFullYear())
   year: number
 
+  @IsNotEmpty()
   @IsNumber()
   @Min(1)
   noOfEpisodes: number
@@ -93,7 +96,7 @@ class GetTvShowsOnServiceQueryDto {
   search: string
 }
 
-class AddTvShowToServiceDto {
+class AddTvShowToServiceParamDto {
   @IsString()
   @IsNotEmpty()
   @IsUUID()
@@ -126,7 +129,7 @@ export {
   AddTvShowDto,
   TvShowIdParamDto,
   RateTvShowDto,
-  AddTvShowToServiceDto,
+  AddTvShowToServiceParamDto,
   AddSeasonToTvShowDto,
   GetTvShowsOnServiceQueryDto,
 }

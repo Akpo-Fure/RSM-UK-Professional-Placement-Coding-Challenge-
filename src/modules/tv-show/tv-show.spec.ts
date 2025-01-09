@@ -6,7 +6,7 @@ import {
   AddTvShowDto,
   AddSeasonToTvShowDto,
   RateTvShowDto,
-  AddTvShowToServiceDto,
+  AddTvShowToServiceParamDto,
 } from './tv-show.dto'
 
 let prisma: PrismaClient
@@ -286,54 +286,45 @@ describe('Tv Show Controller', () => {
   })
   describe('POST /tv-show/add-to-streaming-service', () => {
     it('Should throw an error if the streaming service id is not provided', async () => {
-      const response = await app
-        .post('/tv-show/add-to-streaming-service')
-        .send({
-          tvShowId,
-        } as AddTvShowToServiceDto)
+      const response = await app.post(
+        `/tv-show/add-to-streaming-service/${tvShowId}/dasd`,
+      )
+
       expect(response.status).toBe(400)
       expect(response.body.message).toBe('streamingServiceId must be a UUID')
     })
 
     it('Should throw an error if the tv show id is not provided', async () => {
-      const response = await app
-        .post('/tv-show/add-to-streaming-service')
-        .send({
-          streamingServiceId: streamingServiceId2,
-        } as AddTvShowToServiceDto)
+      const response = await app.post(
+        `/tv-show/add-to-streaming-service/tvShowId/${streamingServiceId2}`,
+      )
+
       expect(response.status).toBe(400)
       expect(response.body.message).toBe('tvShowId must be a UUID')
     })
 
     it("Should throw an error if streaming service doesn't exist", async () => {
-      const response = await app
-        .post('/tv-show/add-to-streaming-service')
-        .send({
-          streamingServiceId: 'c0c4c1e6-7e8c-4d1d-8d3d-9f3d8c7c8c8e',
-          tvShowId,
-        } as AddTvShowToServiceDto)
+      const response = await app.post(
+        `/tv-show/add-to-streaming-service/${tvShowId}/c0c4c1e6-7e8c-4d1d-8d3d-9f3d8c7c8c8e`,
+      )
+
       expect(response.status).toBe(404)
       expect(response.body.message).toBe('Streaming service not found')
     })
 
     it("Should throw an error if tv show doesn't exist", async () => {
-      const response = await app
-        .post('/tv-show/add-to-streaming-service')
-        .send({
-          streamingServiceId: streamingServiceId2,
-          tvShowId: 'c0c4c1e6-7e8c-4d1d-8d3d-9f3d8c7c8c8e',
-        } as AddTvShowToServiceDto)
+      const response = await app.post(
+        `/tv-show/add-to-streaming-service/c0c4c1e6-7e8c-4d1d-8d3d-9f3d8c7c8c8e/${streamingServiceId2}`,
+      )
+
       expect(response.status).toBe(404)
       expect(response.body.message).toBe('TV Show not found')
     })
 
     it('Should add a tv show to a streaming service', async () => {
-      const response = await app
-        .post('/tv-show/add-to-streaming-service')
-        .send({
-          streamingServiceId: streamingServiceId2,
-          tvShowId,
-        } as AddTvShowToServiceDto)
+      const response = await app.post(
+        `/tv-show/add-to-streaming-service/${tvShowId}/${streamingServiceId2}`,
+      )
       const tvShowStreamingService =
         await prisma.tvShowStreamingService.findFirst({
           where: {
@@ -519,6 +510,18 @@ describe('Tv Show Controller', () => {
       expect(response.body.message).toBe(
         'Season 3 already exists for Breaking Bad on Hulu',
       )
+    })
+  })
+
+  describe('GET /tv-show/:id/other-services', () => {
+    it('Should get tv shows on other services', async () => {
+      const response = await app.get(
+        `/tv-show/${streamingServiceId2}/other-services`,
+      )
+
+      expect(response.status).toBe(200)
+      expect(response.body.data).toHaveLength(1)
+      expect(response.body.data[0].name).toBe('Breaking Bad')
     })
   })
 })

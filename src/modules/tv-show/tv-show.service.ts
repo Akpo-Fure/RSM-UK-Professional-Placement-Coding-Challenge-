@@ -10,9 +10,9 @@ import {
   AddTvShowDto,
   TvShowIdParamDto,
   RateTvShowDto,
-  AddTvShowToServiceDto,
   GetTvShowsOnServiceQueryDto,
   AddSeasonToTvShowDto,
+  AddTvShowToServiceParamDto,
 } from './tv-show.dto'
 import { ResponseDto } from '../utils'
 
@@ -51,8 +51,12 @@ export class TvShowService {
     const skip: number = page > 1 ? (page - 1) * limit : 0
 
     const where: Prisma.TvShowStreamingServiceWhereInput = {
+      deleted: false,
       streamingServiceId: streamingServiceId,
-      tvShow: { name: { contains: query.search, mode: 'insensitive' } },
+      tvShow: {
+        name: { contains: query.search, mode: 'insensitive' },
+        deleted: false,
+      },
     }
 
     await this.streamingService.validateStreamingServiceExists(
@@ -78,6 +82,21 @@ export class TvShowService {
     )
   }
 
+  async getTvShowsOnOtherServices(id: string) {
+    const tvShows = await this.prisma.tVShow.findMany({
+      where: {
+        tvShowStreamingService: {
+          some: {
+            streamingServiceId: { not: id },
+          },
+        },
+        deleted: false,
+      },
+    })
+
+    return new ResponseDto('TV Shows retrieved successfully', tvShows)
+  }
+
   async rateTvShow(params: TvShowIdParamDto, body: RateTvShowDto) {
     await this.validateTvShowExists(params.id)
 
@@ -86,27 +105,27 @@ export class TvShowService {
     return new ResponseDto('TV Show rated successfully')
   }
 
-  async addTvShowToService(body: AddTvShowToServiceDto) {
+  async addTvShowToService(params: AddTvShowToServiceParamDto) {
     await this.streamingService.validateStreamingServiceExists(
-      body.streamingServiceId,
+      params.streamingServiceId,
     )
 
-    await this.validateTvShowExists(body.tvShowId)
+    await this.validateTvShowExists(params.tvShowId)
 
     const tvShowStreamingService =
       await this.prisma.tvShowStreamingService.upsert({
         where: {
           tvShowId_streamingServiceId: {
-            tvShowId: body.tvShowId,
-            streamingServiceId: body.streamingServiceId,
+            tvShowId: params.tvShowId,
+            streamingServiceId: params.streamingServiceId,
           },
         },
         update: {
           deleted: false,
         },
         create: {
-          tvShowId: body.tvShowId,
-          streamingServiceId: body.streamingServiceId,
+          tvShowId: params.tvShowId,
+          streamingServiceId: params.streamingServiceId,
         },
       })
 

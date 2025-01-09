@@ -58,6 +58,16 @@ export class StreamingServiceService {
         orderBy: {
           [sortBy]: sort,
         },
+        include: {
+          _count: {
+            select: {
+              film: true,
+              tvShowStreamingService: {
+                where: { tvShow: { deleted: false }, deleted: false },
+              },
+            },
+          },
+        },
         skip: Number(skip),
         take: Number(limit),
       }),
