@@ -100,8 +100,6 @@ export const useAddTvShowToService = (
   const queryClient = useQueryClient()
 
   const addTvShowToService = async () => {
-    console.log('tvShowId', tvShowId)
-    console.log('streamingServiceId', streamingServiceId)
     const response = await API.post(
       `${URL}/add-to-streaming-service/${tvShowId}/${streamingServiceId}`,
     )

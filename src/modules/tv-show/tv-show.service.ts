@@ -129,10 +129,7 @@ export class TvShowService {
         },
       })
 
-    return new ResponseDto(
-      'TV Show added to streaming service successfully',
-      tvShowStreamingService,
-    )
+    return new ResponseDto('TV Show added to streaming service successfully')
   }
 
   async addSeasonToTvShow(body: AddSeasonToTvShowDto) {

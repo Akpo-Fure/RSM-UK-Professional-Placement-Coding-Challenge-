@@ -2,6 +2,10 @@
   "name": "client",
   "version": "0.1.0",
   "private": true,
+  "author": {
+    "name": "Okegbe Akpofure Kelvin-Faith",
+    "email": "okegbeakpofurekelvin@gmail.com"
+  },
   "scripts": {
     "dev": "next dev --turbopack -p 3001",
     "build": "next build",

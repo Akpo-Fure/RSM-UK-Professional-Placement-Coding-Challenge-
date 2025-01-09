@@ -2,9 +2,12 @@
   "name": "RSM-UK-Professional-Placement-Coding-Challenge-",
   "version": "0.0.1",
   "description": "This is a coding challenge for the RSM UK Professional Placement 2025 for the Software Development role.",
-  "author": "Kelvin-Faith Akpofure Okegbe",
   "private": true,
   "license": "UNLICENSED",
+  "author": {
+    "name": "Okegbe Akpofure Kelvin-Faith",
+    "email": "okegbeakpofurekelvin@gmail.com"
+  },
   "scripts": {
     "build": "nest build",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
